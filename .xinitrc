@@ -1,5 +1,8 @@
 
-setxkbmap -layout lv -variant apostrophe
+compton --config ~/.compton.conf -b
 xmodmap .keyswap
 xrdb -merge ~/.Xresources
-exec ck-launch-session xmonad
+feh --bg-scale ~/.config/background.png
+
+exec xmonad
+

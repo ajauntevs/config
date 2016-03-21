@@ -1,18 +1,47 @@
-Config { font    = "xft:Monospace:pixelsize=11:hinting=slight" 
-       , bgColor = "#000000"
-       , fgColor = "#C9A34E"
-       , position = Top 
-       , lowerOnStart = True
-       , commands = [ Run Network "wlan0" ["-L", "8", "-H", "32", "-l", "#C9A34E", "-n", "#429942" ,"-h", "#A36666", "-t", "<dev>: <rx> : <tx>"] 10
-            , Run Network "eth0" ["-L", "8", "-H", "32", "-l", "#C9A34E", "-n", "#429942" ,"-h", "#A36666", "-t", "<dev>: <rx> : <tx>"] 10
-            , Run Cpu ["-L","3","-H","50","--normal","#429942","--high","#A36666"] 10
-            , Run Memory ["-t","Mem: <usedratio>%"] 10
-            , Run Date "%a %b %_d %Y %H:%M:%S" "date" 20
-            , Run Weather "EVRA" ["-t","<station>:<tempC>°C","-L","18","-H","25","--normal","green","--high","red","--low","lightblue"] 36000
-            , Run StdinReader
-            ]
-       , sepChar = "%"
-       , alignSep = "}{"
-       , template = " %StdinReader% }{ %EVRA% <fc=#429942>|</fc> %cpu% <fc=#429942>|</fc> %memory% <fc=#429942>|</fc> %wlan0% <fc=#429942>|</fc> %eth0% <fc=#429942>|</fc> %date%"
-       }
-       
+Config { 
+
+   -- appearance
+     font =         "xft:Bitstream Vera Sans Mono:size=9:bold:antialias=true"
+   , bgColor =      "black"
+   , fgColor =      "#646464"
+   , position =     Top
+   --, border =       BottomB
+   , borderColor =  "#646464"
+
+   -- layout
+   , sepChar =  "%"
+   , alignSep = "}{"
+   , template = "%StdinReader%}{ %multicpu% | %memory% | %date% "
+
+   -- general behavior
+   , lowerOnStart =     True
+   , hideOnStart =      False
+   , allDesktops =      True
+   , overrideRedirect = True
+   , pickBroadest =     False
+   , persistent =       True
+   , commands = 
+        -- cpu activity monitor
+        [ Run MultiCpu       [ "--template" , "Cpu: <total>%"
+                             , "--Low"      , "50"         -- units: %
+                             , "--High"     , "85"         -- units: %
+                             , "--low"      , "darkgreen"
+                             , "--normal"   , "darkorange"
+                             , "--high"     , "darkred"
+                             ] 30
+
+        -- memory usage monitor
+        , Run Memory         [ "--template" ,"Mem: <usedratio>%"
+                             , "--Low"      , "20"        -- units: %
+                             , "--High"     , "90"        -- units: %
+                             , "--low"      , "darkgreen"
+                             , "--normal"   , "darkorange"
+                             , "--high"     , "darkred"
+                             ] 30
+
+        -- time and date indicator 
+        --   (%F = y-m-d date, %a = day of week, %T = h:m:s time)
+        , Run Date           "<fc=#ABABAB>%F (%a) %T</fc>" "date" 10
+	, Run StdinReader
+        ]
+   }
