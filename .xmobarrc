@@ -1,7 +1,7 @@
 Config { 
 
    -- appearance
-     font =         "xft:Bitstream Vera Sans Mono:size=9:bold:antialias=true"
+     font =         "xft:Source Code Pro:size=9:style=Semibold:antialias=true"
    , bgColor =      "black"
    , fgColor =      "#646464"
    , position =     Top
@@ -41,7 +41,7 @@ Config {
 
         -- time and date indicator 
         --   (%F = y-m-d date, %a = day of week, %T = h:m:s time)
-        , Run Date           "<fc=#ABABAB>%F (%a) %T</fc>" "date" 10
+        , Run Date           "<fc=#ABABAB>%F (%a) %H:%M</fc>" "date" 10 
 	, Run StdinReader
         ]
    }

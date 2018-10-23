@@ -1,6 +1,12 @@
+{-# LANGUAGE FlexibleInstances, MultiParamTypeClasses #-}
+
+import Control.Monad
+
 import XMonad
+import qualified XMonad.StackSet as S
 import XMonad.Util.Run
 import XMonad.Config.Desktop
+
 
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
@@ -15,7 +21,7 @@ main = do
     xpipe <- spawnPipe "xmobar"
     xmonad $ desktopConfig  { layoutHook = avoidStruts $ smartBorders $ myLayouts
 			    , handleEventHook = docksEventHook <+> handleEventHook desktopConfig
-			    , manageHook = insertPosition End Newer
+			    , manageHook = insertPosition Below Newer
 			    , logHook = dynamicLogWithPP $ xmobarPP {	ppOutput = hPutStrLn xpipe
 								    ,	ppTitle = xmobarColor "#A9A9A9" "" . shorten 120
 								    }
@@ -26,13 +32,35 @@ main = do
 			    , focusedBorderColor = myFocusedBorderColor
 			    }
 
-columnLayout = renamed [Replace "Columns"] $ multiCol [1, 1, 1, 1, 3] 0 0.03 0.7
-tallLayout = Tall 1 (3/100) (3/5)
+columns = Columns (1/5) (3/100)
+columnsFull = renamed [Replace "Columns Full"] $ multiCol [1, 1, 1, 1, 3] 0 0.03 0.7
 
-myLayouts	= columnLayout ||| tallLayout ||| Full
-myTerminal	= "urxvt"
-myModMask	= mod4Mask
-myBorderWidth	= 1
+myLayouts		= columns ||| columnsFull
+myTerminal		= "kitty -1"
+myModMask		= mod4Mask
+myBorderWidth		= 1
 myNormalBorderColor	= "#000000"
 myFocusedBorderColor	= "#C9C9C9"
+
+data Columns a = Columns {
+    columnsWidth :: !Rational,
+    columnsDelta :: !Rational
+} deriving (Show, Read)
+
+instance LayoutClass Columns a where
+    pureLayout (Columns f d) r = ap zip (makeRectangles r f . length) . S.integrate
+	where makeRectangles r@(Rectangle rx ry rw rh) f c  
+		| fw < 1 = splitHorizontally c (Rectangle nx ry nw rh)
+		| otherwise = splitHorizontally c r
+		    where   fw = fromIntegral c * f
+			    nw = ceiling $ fromRational $ fw * (fromIntegral rw)
+			    nx = fromIntegral $ (rw - nw) `div` 2
+
+    handleMessage l m = 
+	return $ fmap resize (fromMessage m)
+	    where   resize Shrink = l { columnsWidth = max (1/10) $ w - d }
+		    resize Expand = l { columnsWidth = min 1 $ w + d }
+		    w = columnsWidth l
+		    d = columnsDelta l
+    description _ = "Columns"
 
