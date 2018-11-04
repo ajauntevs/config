@@ -45,7 +45,7 @@ myModMask		= mod4Mask
 myBorderWidth		= 1
 myNormalBorderColor	= "#000000"
 myFocusedBorderColor	= "#C9C9C9"
-myKeys 			=
+myKeys			=
 	[((myModMask, xK_f), sendMessage ToggleStruts)]
 
 data Columns a = Columns {
