@@ -50,6 +50,7 @@ Plug 'rust-lang/rust.vim'
 Plug 'scrooloose/nerdtree'
 Plug 'NLKNguyen/papercolor-theme'
 Plug 'mileszs/ack.vim'
+Plug 'justinmk/vim-sneak'
 call plug#end()
 
 map <F2> :NERDTreeToggle<CR>
